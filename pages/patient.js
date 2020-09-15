@@ -248,7 +248,7 @@ class Patient extends Component {
                     <Link href="/">
                         <a>
                             <div id = "logo">
-                                <img src="/untitled-1.png" height="auto" width="100%"/>
+                                <img src="/logo.png" height="auto" width="100%"/>
                             </div>
                         </a>
                     </Link>
