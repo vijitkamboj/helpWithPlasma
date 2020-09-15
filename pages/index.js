@@ -98,7 +98,7 @@ class Home extends Component {
                             <Link href="/">
                                 <a>
                                     <div id = "logo" style={{marginTop:"1rem",marginLeft:"3rem"}}>
-                                        <img src="untitled-1.png" height="auto" width="100%"/>
+                                        <img src="/untitled-1.png" height="auto" width="100%"/>
                                     </div>
                                 </a>
                             </Link>
