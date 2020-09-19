@@ -7,24 +7,16 @@ import { createMuiTheme, ThemeProvider ,responsiveFontSizes,withStyles} from '@m
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import Link from 'next/link';
+import Router from 'next/router'
 import firebase from "../config/fbConfig";
 
 let theme = createMuiTheme({
     typography: {
       fontFamily: [
-        '-apple-system',
-        'BlinkMacSystemFont',
-        '"Segoe UI"',
-        'Roboto',
-        '"Helvetica Neue"',
-        'Arial',
-        'sans-serif',
-        '"Apple Color Emoji"',
-        '"Segoe UI Emoji"',
-        '"Segoe UI Symbol"',
+        'Open Sans'
       ].join(','),
       h5:{
-          fontWeight: 500
+          fontWeight: 700
       }
     },palette:{
         secondary:{
@@ -53,6 +45,19 @@ class Home extends Component {
     state={
         donorSize : 0,
         patientSize: 0
+    }
+
+    // ButtonLink = ({href,children}) => (
+    //     <Link href={href} >
+    //       <a>
+    //       {children}
+    //       </a>
+    //     </Link>
+    //   )
+    ButtonLink = (path)=>{
+        Router.push({
+            pathname: `/${path}`,
+        })
     }
 
     componentDidMount(){
@@ -105,25 +110,22 @@ class Home extends Component {
                             <ThemeProvider theme={theme}>
                                 
                                 <ButtonGroup elevation={10} variant="text"  aria-label="primary button group" className={classes.buttonGoup}>
-            
-                                    <Button color="secondary" className={classes.button} >
-                                        <Typography variant="h5">
-                                            <Link href="/donor">
-                                                <a>
-                                                Register as Donor
-                                                </a>
-                                            </Link>
+                                    <Button color="primary" className={classes.button} onClick={() => {this.ButtonLink('patient')}}>
+                                        
+                                        <Typography variant = "h5">
+                                    
+                                            Patient registration
+                                    
                                         </Typography>
                                     </Button>
 
-                                    <Button color="primary" className={classes.button}> 
-                                        <Typography variant="h5">
-                                            <Link href="/patient">
-                                                <a>
-                                                Patient Registration
-                                                </a>
-                                            </Link>
-                                        </Typography>
+                                    <Button color="secondary" className={classes.button} onClick={() => {this.ButtonLink('donor')}}>
+                                    <Typography variant = "h5">
+                                    
+                                     Register as donor
+                        
+                                    </Typography>
+                                        
                                     </Button>
                                 
                                 </ButtonGroup>
@@ -148,7 +150,7 @@ class Home extends Component {
                     </Grid>
 
                 </Grid>
-                <Divider variant="middle" />
+               
 
             </Grid>
             

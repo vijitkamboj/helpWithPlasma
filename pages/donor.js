@@ -6,28 +6,10 @@ import Grid from '@material-ui/core/Grid';
 import { createMuiTheme, ThemeProvider ,responsiveFontSizes,withStyles} from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import ButtonGroup from '@material-ui/core/ButtonGroup';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-import MomentUtils from '@date-io/moment';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
-
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import Questions from "../Components/questions";
+import DonorPrompts from "../Components/donorPrompts"
 
 let theme = createMuiTheme({
     typography: {
@@ -38,10 +20,11 @@ let theme = createMuiTheme({
           fontWeight: 700,
           padding:"1rem",
           color:"rgb(90, 90, 90)",
-          textAlign:"center"
+          textAlign:"center",
       },
       h5:{
-        fontWeight: 600,
+        fontSize:"1.5rem",
+        fontWeight: 400,
         padding:"1rem",
         color:"rgb(90, 90, 90)",
         textAlign:"center",
@@ -93,10 +76,6 @@ const questions = {
     
 }
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-  }
-
 const defaultState = {0:"",1:"",2:"",3:"",4:"",5:new Date(),6:"",7:{"Severe Cough":0,"High Fever":0,"Shortness of breath":0,"Loss of taste or smell":0,"Chest Pain":0,"Diarrhoea":0,"Pneumonia":0},8:"",9:"",10:"",11:""}
 
 class Donor extends Component {
@@ -109,7 +88,8 @@ class Donor extends Component {
       empty:false,
       confirm: false,
       success: false,
-      agree:false
+      agree:false,
+      questions:questions
     }
 
 
@@ -123,6 +103,29 @@ class Donor extends Component {
     handleDisagree = ()=>{
         Router.push({
             pathname: `/`,
+        })
+    }
+
+    handleClose = () => {
+        this.setState({
+            empty:false,
+            confirm: false,
+            success:false
+        })
+    };
+
+    handleConfirm = () => {
+        const {response} = this.state
+        for (let i=0;i<12;i++){
+            if (questions[i][4] === true && response[i] === ""){
+                this.setState({
+                    empty:true
+                })
+                return 0
+            }
+        }
+        this.setState({
+            confirm: true
         })
     }
 
@@ -194,21 +197,6 @@ class Donor extends Component {
         })
     }
 
-    handleConfirm = () => {
-        const {response} = this.state
-        for (let i=0;i<12;i++){
-            if (questions[i][4] === true && response[i] === ""){
-                this.setState({
-                    empty:true
-                })
-                return 0
-            }
-        }
-        this.setState({
-            confirm: true
-        })
-    }
-
     handleSubmission = () => {
 
         const {response} = this.state
@@ -233,104 +221,18 @@ class Donor extends Component {
             end:false,
             start:true,
             value: null,
-            open:false,
             confirm: false,
             success: true
         })
     }
     
-    handleClose = () => {
-        this.setState({
-            empty:false,
-            confirm: false,
-            success:false
-        })
-    };
 
-    showField = (q,value) =>{
-        const ques = questions[q]
-        switch (ques[1]) {
-            case "text":
-                return(<TextField 
-                        value={value ? value : ""} 
-                        required={ques[4]} 
-                        placeholder={ques[3]} 
-                        label={ques[4] ? "Required" : "Optional"} 
-                        id="outlined-required" 
-                        color="secondary" 
-                        variant="outlined" 
-                        onChange={(e)=>{this.handleChange(e,q)}}
-                            
-                        />)
-            case "option":
-                return(
-                    <FormControl required variant="outlined" style={{minWidth:"150px"}} >
-                        <InputLabel >{ques[3]}</InputLabel>
-                        <Select
-                        value={value ? value : ""}
-                        onChange={(e)=>{this.handleChange(e,q)}}
-                        label={ques[3]}
-                        color="secondary"
-                        >
-                        {
-                            ques[2].map((option) => <MenuItem value={option}>{option}</MenuItem>)
-                        }
-                        </Select>
-                        
-                    </FormControl>
-                )
-            case 'date':
-                return(
-                    <MuiPickersUtilsProvider utils={MomentUtils}>
-     
-                        <KeyboardDatePicker
-                        disableToolbar
-                        variant="inline"
-                        format="MM/DD/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Date picker inline"
-                        value={value ? value : new date()}
-                        onChange={(date) => this.handleDate(date,q)}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                        />
-                    </MuiPickersUtilsProvider>
-                )
-            case "multiple":
-                    return(
-                        <FormGroup row style={{margin:"5px"}}>
-                            {
-                                ques[2].map((symp)=>{
-                                    return(
-                                        <FormControlLabel
-                                            control={
-                                            <Checkbox
-                                                checked={!!value[symp]}
-                                                onChange={(e) => this.handleCheck(e,q,symp)}
-                                                name={symp}
-                                                color="primary"
-                                            />
-                                            }
-                                            label={symp}
-                                        />
-                                    )
-                                })
-                            }
-
-                        </FormGroup>
-                    )
-        
-            default:
-                break;
-        }
-    }
     
     render() {
         console.log(this.state)
         const {classes} = this.props
-        const {ques,start,end,value,empty,confirm,success,agree} = this.state
+        const {ques,start,end,empty,confirm,value,success,agree,questions} = this.state
+        console.log(questions)
         return (
             <Grid 
             style={{height:"100vh",padding:"24px"}}
@@ -339,7 +241,7 @@ class Donor extends Component {
             justify="flex-start"
             alignItems="center"
             spacing = {4}
-            
+            className={classes.container}
             >
 
                 <Grid item >
@@ -375,8 +277,15 @@ class Donor extends Component {
                                             <Typography variant="h5">
                                                 {questions[ques][0]}
                                             </Typography>
-                                            {this.showField(ques,value)}
                                             
+                                            <Questions 
+                                            handleDate={this.handleDate} 
+                                            handleCheck={this.handleCheck}
+                                            handleChange={this.handleChange}
+                                            questions={questions}
+                                            q={ques}
+                                            value={value}
+                                            />
                                           
                                             <ButtonGroup color="primary" elevation={10} variant="text"  className={classes.buttonGroup} aria-label="primary button group" >
                                                 <Button className={classes.buttons}  color="secondary" disabled={start} onClick={()=>this.handlePrevious(ques)} >Previous</Button>
@@ -393,73 +302,17 @@ class Donor extends Component {
                             </Paper>
                         </Grid>
 
-                        <Dialog
-                            open={empty}
-                            onClose={this.handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogTitle id="alert-dialog-title">{"Please fill all of the required information."}</DialogTitle>
-                            
-                            <DialogActions>
-                            <Button onClick={this.handleClose} color="primary">
-                                Close
-                            </Button>
-                            </DialogActions>
-                        </Dialog>
+                        <DonorPrompts 
+                            success = {success}
+                            confirm = {confirm}
+                            empty = {empty}
+                            agree = {agree}
+                            handleClose = {this.handleClose}
+                            handleDisagree = {this.handleDisagree}
+                            handleAgree = {this.handleAgree}
+                            handleSubmission = {this.handleSubmission}
+                        />
 
-                        <Dialog
-                            open={confirm}
-                            onClose={this.handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogTitle id="alert-dialog-title">{"Confirm the submission ?"}</DialogTitle>
-                            <DialogContent>
-                            We are grateful to you for being a superhero! Not much, but we highly request you to fill this form with accurate information as per your best knowledge. 
-                            </DialogContent>
-                            
-                            <DialogActions>
-                            <Button onClick={this.handleClose} color="secondary">
-                                Disagree
-                            </Button>
-                            <Button onClick={this.handleSubmission} color="primary">
-                                Agree
-                            </Button>
-                            </DialogActions>
-                        </Dialog>
-
-                        <Dialog
-                            open={!agree}
-                            onClose={this.handleClose}
-                            aria-labelledby="alert-dialog-title"
-                            aria-describedby="alert-dialog-description"
-                        >
-                            <DialogTitle id="alert-dialog-title">{"Am I a donor ?"}</DialogTitle>
-                            <DialogContent>
-                            1. I should have tested positive for COVID-19.<br />
-                            2. I do not have any children (women only).<br />
-                            3. I do not have diabetes.<br />
-                            4. I do not have high blood pressure.<br />
-                            5. I am not over the age of 65 or under the age of 18.<br />
- 
-                            </DialogContent>
-                            
-                            <DialogActions>
-                            <Button onClick={this.handleDisagree} color="secondary">
-                                No
-                            </Button>
-                            <Button onClick={this.handleAgree} color="primary">
-                                Yes
-                            </Button>
-                            </DialogActions>
-                        </Dialog>
-
-                        <Snackbar open={success} autoHideDuration={6000} onClose={this.handleClose}>
-                            <Alert onClose={this.handleClose} severity="success">
-                                    You are successfully registered.
-                            </Alert>
-                        </Snackbar>
                 </ThemeProvider>
                 
             </Grid>
